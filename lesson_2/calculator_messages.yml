@@ -1,0 +1,35 @@
+en:
+  welcome: "Welcome to Calculator! Enter your name:"
+  greeting: "Hello, %{name}!"
+  valid_name: "Make sure to use a valid name."
+  first_number: "What's the first number?"
+  second_number: "What's the second number?"
+  invalid_number: "Hmm... that doesn't look like a valid number"
+  operations: "What operation would you like to perform? \n
+    1) add\n
+    2) subtract\n
+    3) multiply\n
+    4) divide"
+  invalid_operation: "Must choose 1, 2, 3 or 4"
+  calculation: "%{operator} the two numbers..."
+  result: "The result is %{result}"
+  another_calculation: "Do you want to perform another calculation? (Y to calculate again)"
+  good_bye: "Thank you for using the calculator. Good bye!"
+
+kr:
+  welcome: "환영합니다! 이름을 입력해주세요:"
+  greeting: "안녕하세요 %{name}!"
+  valid_name: "입력이 되지않았습니다. 다시한번 이름을 입력해주세요."
+  first_number: "첫번째 번호를 입력해주세요."
+  second_number: "두번째 번호를 입력해주세요."
+  invalid_number: "유효한 번호가 아닙니다."
+  operations: "계산방법을 골라주세요: \n
+    1) 더하기\n
+    2) 빼기\n
+    3) 곱하기\n
+    4) 나누기"
+  invalid_operation: "1, 2, 3, 4 중에서 골라서 입력해주세요."
+  calculation: "두개의 번호를 %{operator} 하면..."
+  result: "%{result}이(가) 나옵니다."
+  another_calculation: "한번더 계산 하시겠습니까? (Y를 눌러주세요)"
+  good_bye: "저희 계산기를 이용해주셔서 감사합니다!"
