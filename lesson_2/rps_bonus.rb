@@ -5,7 +5,7 @@ WIN_MATRIX = [
   %w(paper tie scissors lizard paper),
   %w(rock scissors tie scissors spock),
   %w(rock lizard scissors tie lizard),
-  %w(spock paper spock lizard tie),
+  %w(spock paper spock lizard tie)
 ]
 MAP = {
   'rock' => 0,
@@ -39,6 +39,16 @@ def calculate_winner(player1, player2)
   WIN_MATRIX[MAP[player1]][MAP[player2]]
 end
 
+def determine_winner(winning_hand, player_choice)
+  if winning_hand == "tie"
+    "tie"
+  elsif winning_hand == player_choice
+    "player"
+  else
+    "computer"
+  end
+end
+
 def display_results(winner)
   if winner == 'tie'
     prompt("It's a tie!")
@@ -49,22 +59,33 @@ def display_results(winner)
   end
 end
 
-$player_score = 0
-$computer_score = 0
-
-def score(winner)
+def add_score(winner, scores)
   if winner == "player"
-    $player_score += 1
+    scores[:player] += 1
   elsif winner == "computer"
-    $computer_score +=1
+    scores[:computer] += 1
   end
 end
 
-if ENV["TEST"] != "true"
+def display_score(scores)
+  prompt("You: #{scores[:player]} ; Computer: #{scores[:computer]}")
+end
+
+def display_grand_winner(scores)
+  if (scores[:player]) == 3
+    prompt("The grand winner is You!")
+  elsif (scores[:computer]) == 3
+    prompt("The grand winner is Computer!")
+  end
+end
+
+loop do
+  scores = { player: 0, computer: 0 }
   loop do
     player_choice = ''
     loop do
-      prompt("Please choose one: #{VALID_CHOICES.join(', ')} (You may type the first letter)")
+      prompt("Please choose one: #{VALID_CHOICES.join(', ')}
+            (You may type in the first letters)")
       player_choice = gets.chomp
 
       if valid_choice?(player_choice) || valid_letters?(player_choice)
@@ -74,35 +95,28 @@ if ENV["TEST"] != "true"
       end
     end
 
-    player_choice = convert_letter_to_word(player_choice) if valid_letters?(player_choice)
+    if valid_letters?(player_choice)
+      player_choice = convert_letter_to_word(player_choice)
+    end
 
     computer_choice = VALID_CHOICES.sample
 
     prompt("You chose: #{player_choice}; Computer chose: #{computer_choice}")
+
     winning_hand = calculate_winner(player_choice, computer_choice)
-    winner = if winning_hand == "tie"
-      "tie"
-    elsif winning_hand == player_choice
-      "player"
-    else
-      "computer"
-    end
+    winner = determine_winner(winning_hand, player_choice)
+    add_score(winner, scores)
 
     display_results(winner)
+    display_score(scores)
+    display_grand_winner(scores)
 
-    score(winner)
-
-    prompt("You: #{$player_score}; Computer: #{$computer_score}")
-    break if $player_score == 3 || $computer_score == 3
+    break if (scores[:player]) == 3 || (scores[:computer]) == 3
   end
 
-  if $player_score >= 3
-    prompt("The grand winner is You!")
-  else
-    prompt("The grand winner is Computer!")
-  end
-
-  prompt("Thank you for playing! Good bye!")
-    else
-  puts "Test env...skipping"
+  prompt("Do you want to play again?")
+  answer = gets.chomp
+  break unless answer.downcase.start_with?('y')
 end
+
+prompt("Thank you for playing! Good bye!")
