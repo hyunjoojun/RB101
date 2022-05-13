@@ -1,5 +1,10 @@
-VALID_CHOICES = %w(rock paper scissors lizard spock)
-VALID_LETTERS = %w(r p sc l sp)
+CHOICES = {
+  r: "rock",
+  p: "paper",
+  sc: "scissors",
+  l: "lizard",
+  sp: "spock"
+}
 WIN_MATRIX = [
   %w(tie paper rock rock spock),
   %w(paper tie scissors lizard paper),
@@ -20,19 +25,15 @@ def prompt(message)
 end
 
 def valid_choice?(choice)
-  VALID_CHOICES.include?(choice)
+  CHOICES.values.include?(choice)
 end
 
 def valid_letters?(letter)
-  VALID_LETTERS.include?(letter)
+  CHOICES.keys.include?(letter.to_sym)
 end
 
 def convert_letter_to_word(letter)
-  VALID_CHOICES.each do |word|
-    if word.start_with?(letter)
-      return word
-    end
-  end
+  CHOICES[letter.to_sym]
 end
 
 def calculate_winner(player1, player2)
@@ -84,7 +85,7 @@ loop do
   loop do
     player_choice = ''
     loop do
-      prompt("Please choose one: #{VALID_CHOICES.join(', ')}
+      prompt("Please choose one: #{CHOICES.values.join(', ')}
             (You may type in the first letters)")
       player_choice = gets.chomp
 
@@ -99,7 +100,7 @@ loop do
       player_choice = convert_letter_to_word(player_choice)
     end
 
-    computer_choice = VALID_CHOICES.sample
+    computer_choice = CHOICES.values.sample
 
     prompt("You chose: #{player_choice}; Computer chose: #{computer_choice}")
 
