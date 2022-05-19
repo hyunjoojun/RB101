@@ -6,14 +6,21 @@ Problem with dot_separated_ip_address? method:
 2. Only 4 components should return true.
 =end
 
+def is_an_ip_number?(part)
+  (0..255).include?(part.to_i)
+end
+
 def dot_separated_ip_address?(input_string)
   dot_separated_words = input_string.split(".")
   return false unless dot_separated_words.size == 4
 
   while dot_separated_words.size > 0 do
     word = dot_separated_words.pop
-    break unless is_an_ip_number?(word)
+    return false unless is_an_ip_number?(word)
   end
 
   true
 end
+
+p dot_separated_ip_address?("5.24.15.3")
+p dot_separated_ip_address?("4.2.1.25.52")
