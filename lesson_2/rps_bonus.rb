@@ -80,24 +80,34 @@ def display_grand_winner(scores)
   end
 end
 
+def get_player_choice
+  prompt("Please choose one: #{CHOICES.values.join(', ')}
+        You may type the word or the letter(s):
+        rock(r), paper(p), scissors(sc), lizard(l), spock(sp)")
+  player_choice = gets.chomp
+  player_choice
+end
+
+def determine_if_valid?(player_choice)
+  loop do
+    if valid_choice?(player_choice) || valid_letters?(player_choice)
+      break
+    else
+      prompt("Invalid choice.")
+      player_choice = get_player_choice
+    end
+  end
+
+  player_choice
+end
+
 prompt("Welcome to Rock, Paper, Scissors, Lizard, Spock!")
 
 loop do
   scores = { player: 0, computer: 0 }
   loop do
-    player_choice = ''
-    loop do
-      prompt("Please choose one: #{CHOICES.values.join(', ')}
-            You may type the word or the letter(s):
-            rock(r), paper(p), scissors(sc), lizard(l), spock(sp)")
-      player_choice = gets.chomp
-
-      if valid_choice?(player_choice) || valid_letters?(player_choice)
-        break
-      else
-        prompt("Invalid choice.")
-      end
-    end
+    player_choice = get_player_choice
+    player_choice = determine_if_valid?(player_choice)
 
     if valid_letters?(player_choice)
       player_choice = convert_letter_to_word(player_choice)
