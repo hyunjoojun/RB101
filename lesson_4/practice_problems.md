@@ -15,7 +15,7 @@ so select will return all the numbers in the array.
   str.length < 4
 end
 
-=> 1
+=> 2
 Goes through each elements and
 if block returns true, count increases by 1
 
@@ -80,3 +80,43 @@ The block's last expression is 3.odd? which returns true.
 any? method returns true because odd number exists in the array.
 
 --------------
+
+** Practice Problem 8
+arr = [1, 2, 3, 4, 5]
+arr.take(2)
+
+=> [1, 2]
+take method takes first (n) elements from the array and returns them.
+It is not a destructive method and the original array stays the same.
+Read documentation and test it out in irb.
+
+--------------
+
+** Practice Problem 9
+{ a: 'ant', b: 'bear' }.map do |key, value|
+  if value.size > 3
+    value
+  end
+end
+
+=> [nil, "bear"]
+map method returns a new array.
+The first value 'ant' evaluates as false by the if condition.
+The if statement returns nil.
+The last value evaluates as true and returns the value according to the block.
+
+--------------
+
+** Practice Problem 10
+[1, 2, 3].map do |num|
+  if num > 1
+    puts num
+  else
+    num
+  end
+end
+
+=> [1, nil, nil]
+map method returns a new array with block's return value.
+1 is returned because according to the block, it returns itself.
+2 and 3 returned nil because of puts method.
