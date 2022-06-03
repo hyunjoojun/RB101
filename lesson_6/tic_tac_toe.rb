@@ -99,6 +99,14 @@ def display_score(scores)
   prompt("Player: #{scores[:player]} ; Computer: #{scores[:computer]}")
 end
 
+def display_grand_winner(scores)
+  if (scores[:player]) == 5
+    prompt("The grand winner is You!")
+  elsif (scores[:computer]) == 5
+    prompt("The grand winner is Computer!")
+  end
+end
+
 loop do
   scores = { player: 0, computer: 0 }
 
@@ -134,6 +142,8 @@ loop do
 
     break if scores[:player] == 5 || scores[:computer] == 5
   end
+
+  display_grand_winner(scores)
 
   prompt "Play again? (y or n)"
   answer = gets.chomp
