@@ -86,25 +86,53 @@ def detect_winner(brd)
   nil
 end
 
+def add_score(brd, scores)
+  if detect_winner(brd) == 'Player'
+    scores[:player] += 1
+  elsif detect_winner(brd) == 'Computer'
+    scores[:computer] += 1
+  end
+  scores
+end
+
+def display_score(scores)
+  prompt("Player: #{scores[:player]} ; Computer: #{scores[:computer]}")
+end
+
 loop do
-  board = initialize_board
+  scores = { player: 0, computer: 0 }
 
   loop do
+    board = initialize_board
+
+    loop do
+      display_board(board)
+
+      player_places_piece!(board)
+      break if someone_won?(board) || board_full?(board)
+
+      computer_places_piece!(board)
+      break if someone_won?(board) || board_full?(board)
+    end
+
     display_board(board)
 
-    player_places_piece!(board)
-    break if someone_won?(board) || board_full?(board)
+    if someone_won?(board)
+      prompt "#{detect_winner(board)} won!"
+    else
+      prompt "It's a tie!"
+    end
 
-    computer_places_piece!(board)
-    break if someone_won?(board) || board_full?(board)
-  end
+    add_score(board, scores)
+    display_score(scores)
 
-  display_board(board)
+    prompt "Press Enter to continue."
+    loop do
+      input = gets.chomp
+      break if input
+    end
 
-  if someone_won?(board)
-    prompt "#{detect_winner(board)} won!"
-  else
-    prompt "It's a tie!"
+    break if scores[:player] == 5 || scores[:computer] == 5
   end
 
   prompt "Play again? (y or n)"
