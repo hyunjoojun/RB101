@@ -6,6 +6,7 @@ WINNING_LINES = [[1, 2, 3], [4, 5, 6], [7, 8, 9]] + # rows
 INITIAL_MARKER = ' '
 PLAYER_MARKER = 'X'
 COMPUTER_MARKER = 'O'
+PLAYERS = ['Player', 'Computer']
 
 def prompt(msg)
   puts "=> #{msg}"
@@ -50,31 +51,31 @@ def joinor(list, sign=', ', word='or')
   end
 end
 
-def whose_turn?(brd)
-  first_turn = ''
+# def whose_turn?
+#   first_turn = ''
 
-  loop do
-    prompt "Who is going first? (P for Player or C for Computer)"
-    first_turn = gets.chomp.upcase
+#   loop do
+#     prompt "Who is going first? (P for Player or C for Computer)"
+#     first_turn = gets.chomp.upcase
 
-    if first_turn == "P"
-      prompt "Player is going first!"
-      sleep(2)
-      break
-    elsif first_turn == "C"
-      prompt "Computer is going first!"
-      sleep(2)
-      break
-    end
-    prompt "Invalid choice."
-  end
-  return first_turn
-end
+#     if first_turn == "P"
+#       prompt "Player is going first!"
+#       sleep(2)
+#       break
+#     elsif first_turn == "C"
+#       prompt "Computer is going first!"
+#       sleep(2)
+#       break
+#     end
+#     prompt "Invalid choice."
+#   end
+#   return first_turn
+# end
 
-def who_goes_first?(brd)
-  first_turn = ["P", "C"].sample
+def who_goes_first?
+  first_turn = PLAYERS.sample
 
-  if first_turn == "P"
+  if first_turn == "Player"
     prompt "Player is going first!"
     sleep(2)
   else
@@ -84,28 +85,16 @@ def who_goes_first?(brd)
   first_turn
 end
 
-def player_first(brd)
-  loop do
-    display_board(brd)
-
+def place_piece!(brd, current_player)
+  if current_player == 'Player'
     player_places_piece!(brd)
-    break if someone_won?(brd) || board_full?(brd)
-
+  else
     computer_places_piece!(brd)
-    break if someone_won?(brd) || board_full?(brd)
   end
 end
 
-def computer_first(brd)
-  loop do
-    computer_places_piece!(brd)
-    break if someone_won?(brd) || board_full?(brd)
-
-    display_board(brd)
-
-    player_places_piece!(brd)
-    break if someone_won?(brd) || board_full?(brd)
-  end
+def alternate_player(current_player)
+  PLAYERS.select { |player| player != current_player }.first
 end
 
 def player_places_piece!(brd)
@@ -203,12 +192,13 @@ loop do
 
   loop do
     board = initialize_board
-    first_turn = who_goes_first?(board)
+    current_player = who_goes_first?
 
-    if first_turn == 'P'
-      player_first(board)
-    elsif first_turn == 'C'
-      computer_first(board)
+    loop do
+      display_board(board)
+      place_piece!(board, current_player)
+      current_player = alternate_player(current_player)
+      break if someone_won?(board) || board_full?(board)
     end
 
     display_board(board)
