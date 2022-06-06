@@ -50,6 +50,51 @@ def joinor(list, sign=', ', word='or')
   end
 end
 
+def whose_turn?(brd)
+  first_turn = ''
+
+  loop do
+    prompt "Who is going first? (P for Player or C for Computer)"
+    first_turn = gets.chomp.upcase
+
+    if first_turn == "P"
+      prompt "Player is going first!"
+      sleep(2)
+      break
+    elsif first_turn == "C"
+      prompt "Computer is going first!"
+      sleep(2)
+      break
+    end
+    prompt "Invalid choice."
+  end
+  return first_turn
+end
+
+def player_first(brd)
+  loop do
+    display_board(brd)
+
+    player_places_piece!(brd)
+    break if someone_won?(brd) || board_full?(brd)
+
+    computer_places_piece!(brd)
+    break if someone_won?(brd) || board_full?(brd)
+  end
+end
+
+def computer_first(brd)
+  loop do
+    computer_places_piece!(brd)
+    break if someone_won?(brd) || board_full?(brd)
+
+    display_board(brd)
+
+    player_places_piece!(brd)
+    break if someone_won?(brd) || board_full?(brd)
+  end
+end
+
 def player_places_piece!(brd)
   square = ''
   loop do
@@ -145,15 +190,12 @@ loop do
 
   loop do
     board = initialize_board
+    first_turn = whose_turn?(board)
 
-    loop do
-      display_board(board)
-
-      player_places_piece!(board)
-      break if someone_won?(board) || board_full?(board)
-
-      computer_places_piece!(board)
-      break if someone_won?(board) || board_full?(board)
+    if first_turn == 'P'
+      player_first(board)
+    elsif first_turn == 'C'
+      computer_first(board)
     end
 
     display_board(board)
