@@ -71,6 +71,19 @@ def whose_turn?(brd)
   return first_turn
 end
 
+def who_goes_first?(brd)
+  first_turn = ["P", "C"].sample
+
+  if first_turn == "P"
+    prompt "Player is going first!"
+    sleep(2)
+  else
+    prompt "Computer is going first!"
+    sleep(2)
+  end
+  first_turn
+end
+
 def player_first(brd)
   loop do
     display_board(brd)
@@ -190,7 +203,7 @@ loop do
 
   loop do
     board = initialize_board
-    first_turn = whose_turn?(board)
+    first_turn = who_goes_first?(board)
 
     if first_turn == 'P'
       player_first(board)
