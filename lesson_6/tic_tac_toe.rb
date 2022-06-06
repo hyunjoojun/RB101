@@ -12,6 +12,7 @@ def prompt(msg)
   puts "=> #{msg}"
 end
 
+# rubocop: disable Metrics/AbcSize
 def display_board(brd)
   system 'clear'
   puts "You're a #{PLAYER_MARKER}. Computer is #{COMPUTER_MARKER}."
@@ -29,6 +30,7 @@ def display_board(brd)
   puts "     |     |"
   puts ""
 end
+# rubocop: enable Metrics/AbcSize
 
 def initialize_board
   new_board = {}
@@ -51,37 +53,15 @@ def joinor(list, sign=', ', word='or')
   end
 end
 
-# def whose_turn?
-#   first_turn = ''
-
-#   loop do
-#     prompt "Who is going first? (P for Player or C for Computer)"
-#     first_turn = gets.chomp.upcase
-
-#     if first_turn == "P"
-#       prompt "Player is going first!"
-#       sleep(2)
-#       break
-#     elsif first_turn == "C"
-#       prompt "Computer is going first!"
-#       sleep(2)
-#       break
-#     end
-#     prompt "Invalid choice."
-#   end
-#   return first_turn
-# end
-
 def who_goes_first?
   first_turn = PLAYERS.sample
 
   if first_turn == "Player"
     prompt "Player is going first!"
-    sleep(2)
   else
     prompt "Computer is going first!"
-    sleep(2)
   end
+  sleep(3)
   first_turn
 end
 
@@ -176,19 +156,21 @@ def add_score(brd, scores)
 end
 
 def display_score(scores)
-  prompt("Player: #{scores[:player]} ; Computer: #{scores[:computer]}")
+  prompt "Player: #{scores[:player]} ; Computer: #{scores[:computer]}"
 end
 
 def display_grand_winner(scores)
   if (scores[:player]) == 5
-    prompt("The grand winner is You!")
+    prompt "The grand winner is You!"
   elsif (scores[:computer]) == 5
-    prompt("The grand winner is Computer!")
+    prompt "The grand winner is Computer!"
   end
 end
 
 loop do
   scores = { player: 0, computer: 0 }
+  prompt "Welcome to Tic Tac Toe!"
+  prompt "The first one to score 5 will be the grand winner!"
 
   loop do
     board = initialize_board
