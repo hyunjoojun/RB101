@@ -8,10 +8,6 @@ PLAYER_MARKER = 'X'
 COMPUTER_MARKER = 'O'
 PLAYERS = ['Player', 'Computer']
 
-def prompt(msg)
-  puts "=> #{msg}"
-end
-
 # rubocop: disable Metrics/AbcSize
 def display_board(brd)
   system 'clear'
@@ -31,6 +27,15 @@ def display_board(brd)
   puts ""
 end
 # rubocop: enable Metrics/AbcSize
+
+def prompt(msg)
+  puts "=> #{msg}"
+end
+
+def welcome_message
+  prompt "Welcome to Tic-Tac-Toe!"
+  prompt "First player to win 5 rounds wins the game!"
+end
 
 def initialize_board
   new_board = {}
@@ -65,6 +70,15 @@ def who_goes_first?
   first_turn
 end
 
+def game_rounds(brd, current_player)
+  loop do
+    display_board(brd)
+    place_piece!(brd, current_player)
+    current_player = alternate_player(current_player)
+    break if someone_won?(brd) || board_full?(brd)
+  end
+end
+
 def place_piece!(brd, current_player)
   if current_player == 'Player'
     player_places_piece!(brd)
@@ -92,36 +106,29 @@ end
 def find_at_risk_square(line, brd, marker)
   if brd.values_at(*line).count(marker) == 2
     brd.select { |k, v| line.include?(k) && v == INITIAL_MARKER }.keys.first
-  else
-    nil
   end
 end
 
-def computer_places_piece!(brd)
-  square = nil
-
-  # offense first
+def strategic_square(brd, marker)
   WINNING_LINES.each do |line|
-    square = find_at_risk_square(line, brd, COMPUTER_MARKER)
-    break if square
+    square = find_at_risk_square(line, brd, marker)
+    return square if square
   end
+  nil
+end
+
+def computer_places_piece!(brd)
+  # offense first
+  square = strategic_square(brd, COMPUTER_MARKER)
 
   # defense
   if !square
-    WINNING_LINES.each do |line|
-      square = find_at_risk_square(line, brd, PLAYER_MARKER)
-      break if square
-    end
+    square = strategic_square(brd, PLAYER_MARKER)
   end
 
-  # pick square 5 if available
+  # pick square 5 or random
   if !square
-    square = 5 if empty_squares(brd).include?(5)
-  end
-
-  # just pick a square
-  if !square
-    square = empty_squares(brd).sample
+    square = empty_squares(brd).include?(5) ? 5 : empty_squares(brd).sample
   end
 
   brd[square] = COMPUTER_MARKER
@@ -159,6 +166,14 @@ def display_score(scores)
   prompt "Player: #{scores[:player]} ; Computer: #{scores[:computer]}"
 end
 
+def display_round_winner(brd)
+  if someone_won?(brd)
+    prompt "#{detect_winner(brd)} won!"
+  else
+    prompt "It's a tie!"
+  end
+end
+
 def display_grand_winner(scores)
   if (scores[:player]) == 5
     prompt "The grand winner is You!"
@@ -167,30 +182,18 @@ def display_grand_winner(scores)
   end
 end
 
+# main loop
 loop do
   scores = { player: 0, computer: 0 }
-  prompt "Welcome to Tic Tac Toe!"
-  prompt "The first one to score 5 will be the grand winner!"
+  welcome_message
 
   loop do
     board = initialize_board
     current_player = who_goes_first?
 
-    loop do
-      display_board(board)
-      place_piece!(board, current_player)
-      current_player = alternate_player(current_player)
-      break if someone_won?(board) || board_full?(board)
-    end
-
+    game_rounds(board, current_player)
     display_board(board)
-
-    if someone_won?(board)
-      prompt "#{detect_winner(board)} won!"
-    else
-      prompt "It's a tie!"
-    end
-
+    display_round_winner(board)
     add_score(board, scores)
     display_score(scores)
 
