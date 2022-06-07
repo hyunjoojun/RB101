@@ -58,7 +58,26 @@ def joinor(list, sign=', ', word='or')
   end
 end
 
-def who_goes_first?
+def decide_first_turn
+  first_turn = ''
+
+  loop do
+    prompt "Do you want to decide who goes first? (Y or N)"
+    answer = gets.chomp.upcase
+
+    if answer == 'Y'
+      first_turn = who_goes_first?
+    elsif answer == 'N'
+      first_turn = random_turn
+    end
+
+    break if answer == 'Y' || answer == 'N'
+    prompt "Invalid choice. Please enter Y or N."
+  end
+  first_turn
+end
+
+def random_turn
   first_turn = PLAYERS.sample
 
   if first_turn == "Player"
@@ -67,6 +86,28 @@ def who_goes_first?
     prompt "Computer is going first!"
   end
   sleep(3)
+  first_turn
+end
+
+def who_goes_first?
+  first_turn = ''
+
+  loop do
+    prompt "Who is going first? (P for Player / C for Computer)"
+    first_turn = gets.chomp.upcase
+
+    if first_turn == "P"
+      first_turn = 'Player'
+      prompt "Player is going first!"
+    elsif first_turn == "C"
+      first_turn = 'Computer'
+      prompt "Computer is going first!"
+    end
+    sleep(2)
+
+    break if first_turn == 'Player' || first_turn == 'Computer'
+    prompt "Invalid choice."
+  end
   first_turn
 end
 
@@ -189,7 +230,7 @@ loop do
 
   loop do
     board = initialize_board
-    current_player = who_goes_first?
+    current_player = decide_first_turn
 
     game_rounds(board, current_player)
     display_board(board)
