@@ -30,7 +30,7 @@ def prompt(msg)
   puts "=> #{msg}"
 end
 
-def welcome_message
+def display_welcome_message
   prompt "Welcome to Tic-Tac-Toe!"
   prompt "First player to win 5 rounds wins the game!"
 end
@@ -234,7 +234,7 @@ end
 # main loop
 loop do
   scores = { player: 0, computer: 0 }
-  welcome_message
+  display_welcome_message
 
   loop do
     board = initialize_board
