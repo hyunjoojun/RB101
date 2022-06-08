@@ -1,5 +1,3 @@
-require 'pry'
-
 WINNING_LINES = [[1, 2, 3], [4, 5, 6], [7, 8, 9]] + # rows
                 [[1, 4, 7], [2, 5, 8], [3, 6, 9]] + # cols
                 [[1, 5, 9], [3, 5, 7]]              # diagonals
@@ -80,12 +78,21 @@ end
 def random_turn
   first_turn = PLAYERS.sample
 
-  if first_turn == "Player"
-    prompt "Player is going first!"
-  else
-    prompt "Computer is going first!"
+  display_first_turn(first_turn)
+  sleep(2)
+  first_turn
+end
+
+def player_chooses_turn
+  prompt "Who is going first? (P for Player / C for Computer)"
+  first_turn = gets.chomp.upcase
+
+  if first_turn == "P"
+    first_turn = 'Player'
+  elsif first_turn == "C"
+    first_turn = 'Computer'
   end
-  sleep(3)
+
   first_turn
 end
 
@@ -93,22 +100,23 @@ def who_goes_first?
   first_turn = ''
 
   loop do
-    prompt "Who is going first? (P for Player / C for Computer)"
-    first_turn = gets.chomp.upcase
-
-    if first_turn == "P"
-      first_turn = 'Player'
-      prompt "Player is going first!"
-    elsif first_turn == "C"
-      first_turn = 'Computer'
-      prompt "Computer is going first!"
-    end
+    first_turn = player_chooses_turn
+    display_first_turn(first_turn)
     sleep(2)
 
     break if first_turn == 'Player' || first_turn == 'Computer'
-    prompt "Invalid choice."
   end
   first_turn
+end
+
+def display_first_turn(first_turn)
+  if first_turn == 'Player'
+    prompt "Player is going first!"
+  elsif first_turn == 'Computer'
+    prompt "Computer is going first!"
+  else
+    prompt "Invalid choice."
+  end
 end
 
 def game_rounds(brd, current_player)
@@ -254,4 +262,4 @@ loop do
   break unless answer.downcase.start_with?('y')
 end
 
-prompt "Thanks for playing Tic Tac Toe! Good bye!"
+prompt "Thanks for playing Tic-Tac-Toe! Good bye!"
