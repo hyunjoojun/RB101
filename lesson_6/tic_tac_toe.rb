@@ -5,6 +5,7 @@ INITIAL_MARKER = ' '
 PLAYER_MARKER = 'X'
 COMPUTER_MARKER = 'O'
 PLAYERS = ['Player', 'Computer']
+NUMBER_OF_WINS = 5
 
 # rubocop: disable Metrics/AbcSize
 def display_board(brd)
@@ -31,6 +32,7 @@ def prompt(msg)
 end
 
 def display_welcome_message
+  system 'clear'
   prompt "Welcome to Tic-Tac-Toe!"
   prompt "First player to win 5 rounds wins the game!"
 end
@@ -140,16 +142,20 @@ def alternate_player(current_player)
   PLAYERS.select { |player| player != current_player }.first
 end
 
+def integer?(input)
+  input.to_i.to_s == input
+end
+
 def player_places_piece!(brd)
   square = ''
   loop do
     prompt "Choose a position to place a piece: #{joinor(empty_squares(brd))}"
-    square = gets.chomp.to_i
-    break if empty_squares(brd).include?(square)
+    square = gets.chomp
+    break if empty_squares(brd).include?(square.to_i) && integer?(square)
     prompt "Sorry, that's not a valid choice."
   end
 
-  brd[square] = PLAYER_MARKER
+  brd[square.to_i] = PLAYER_MARKER
 end
 
 def find_at_risk_square(line, brd, marker)
@@ -224,9 +230,9 @@ def display_round_winner(brd)
 end
 
 def display_grand_winner(scores)
-  if (scores[:player]) == 5
+  if (scores[:player]) == NUMBER_OF_WINS
     prompt "The grand winner is You!"
-  elsif (scores[:computer]) == 5
+  elsif (scores[:computer]) == NUMBER_OF_WINS
     prompt "The grand winner is Computer!"
   end
 end
@@ -252,7 +258,7 @@ loop do
       break if input
     end
 
-    break if scores[:player] == 5 || scores[:computer] == 5
+    break if scores.values.include?(NUMBER_OF_WINS)
   end
 
   display_grand_winner(scores)
