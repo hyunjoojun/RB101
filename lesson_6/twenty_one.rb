@@ -1,6 +1,6 @@
 require 'pry'
 
-SUITS = %w(H D C S)
+SUITS = %w(♥ ♦ ♣ ♠)
 VALUES = %w(2 3 4 5 6 7 8 9 10 J Q K A)
 
 def prompt(msg)
@@ -8,13 +8,16 @@ def prompt(msg)
 end
 
 def display_welcome_message
-  system 'clear'
   prompt "Welcome to Twenty-One!"
   prompt "Try to get as close to 21 as possible, without going over!"
 end
 
 def initialize_deck
   SUITS.product(VALUES).shuffle
+end
+
+def valid_input?(input)
+  input == 'h' || input == 's'
 end
 
 def display_cards(dealer_cards, player_cards)
@@ -92,6 +95,7 @@ def play_again?
 end
 
 loop do
+  system 'clear'
   display_welcome_message
 
   # initialize vars
@@ -113,7 +117,7 @@ loop do
     loop do
       prompt "Would you like to (h)it or (s)tay?"
       player_turn = gets.chomp.downcase
-      break if ['h', 's'].include?(player_turn)
+      break if valid_input?(player_turn)
       prompt "Sorry, must enter 'h' or 's'."
     end
 
