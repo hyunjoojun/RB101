@@ -1,7 +1,10 @@
 require 'pry'
 
 SUITS = %w(♥ ♦ ♣ ♠)
-VALUES = %w(2 3 4 5 6 7 8 9 10 J Q K A)
+VALUES = {
+  "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9,
+  "10": 10, "Jack": 10, "Queen": 10, "King": 10, "Ace": 11
+}
 
 def prompt(msg)
   puts "=> #{msg}"
@@ -13,36 +16,26 @@ def display_welcome_message
 end
 
 def initialize_deck
-  SUITS.product(VALUES).shuffle
+  SUITS.product(VALUES.keys).shuffle
 end
 
 def valid_input?(input)
   input == 'h' || input == 's'
 end
 
-def display_cards(dealer_cards, player_cards)
-  prompt "Your cards: #{player_cards}, total of #{total(player_cards)}"
-  prompt "Dealer's cards: #{dealer_cards[0]} + ? "
+def display_cards(cards)
+  cards.map(&:join).join(", ")
 end
 
 def total(cards)
-  # cards = [['H', '3'], ['S', 'Q'], ... ]
-  values = cards.map { |card| card[1] }
+  values = cards.map { |card| VALUES[card[1]] }
 
   sum = 0
-  values.each do |value|
-    if value == "A"
-      sum += 11
-    elsif value.to_i == 0 # J, Q, K
-      sum += 10
-    else
-      sum += value.to_i
-    end
-  end
+  values.each { |value| sum += value }
 
   # correct for Aces
-  values.select { |value| value == "A" }.count.times do
-    sum -= 10 if sum > 21
+  cards.each do |card|
+    sum -= 10 if card[1] == :Ace && sum > 21
   end
 
   sum
@@ -109,7 +102,8 @@ loop do
     dealer_cards << deck.pop
   end
 
-  display_cards(dealer_cards, player_cards)
+  prompt "Your cards: #{display_cards(player_cards)}, total: #{total(player_cards)}"
+  prompt "Dealer's cards: #{display_cards(dealer_cards)[0..1]} + ? "
 
   # player turn
   loop do
@@ -123,8 +117,9 @@ loop do
 
     if player_turn == 'h'
       player_cards << deck.pop
+      # player_total += player_cards.last
       prompt "You chose to hit!"
-      prompt "Your cards are now: #{player_cards}"
+      prompt "Your cards are now: #{display_cards(player_cards)}"
       prompt "Your total is now: #{total(player_cards)}"
     end
 
@@ -146,7 +141,7 @@ loop do
 
     prompt "Dealer hits!"
     dealer_cards << deck.pop
-    prompt "Dealer's cards are now: #{dealer_cards}"
+    prompt "Dealer's cards are now: #{display_cards(dealer_cards)}"
   end
 
   if busted?(dealer_cards)
@@ -159,8 +154,8 @@ loop do
 
   # both player and dealer stays - compare cards!
   puts "=============="
-  prompt "Dealer has #{dealer_cards}, for a total of: #{total(dealer_cards)}"
-  prompt "Player has #{player_cards}, for a total of: #{total(player_cards)}"
+  prompt "Dealer has #{display_cards(dealer_cards)}, for a total of: #{total(dealer_cards)}"
+  prompt "Player has #{display_cards(player_cards)}, for a total of: #{total(player_cards)}"
   puts "=============="
 
   display_result(dealer_cards, player_cards)
