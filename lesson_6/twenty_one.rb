@@ -34,11 +34,20 @@ def total(cards)
   values.each { |value| sum += value }
 
   # correct for Aces
-  cards.each do |card|
-    sum -= 10 if card[1] == :Ace && sum > 21
+  cards.select { |card| card[1] == :Ace }.count.times do
+    sum -= 10 if sum > 21
   end
 
   sum
+end
+
+def add_to_total(cards, total)
+  total += VALUES[cards.last[1]]
+
+  cards.select { |card| card[1] == :Ace }.count.times do
+    total -= 10 if total > 21
+  end
+  total
 end
 
 def busted?(total)
@@ -117,7 +126,7 @@ loop do
 
     if player_turn == 'h'
       player_cards << deck.pop
-      player_total += VALUES[player_cards.last[1]]
+      player_total = add_to_total(player_cards, player_total)
       prompt "You chose to hit!"
       prompt "Your cards are now: #{display_cards(player_cards)}"
       prompt "Your total is now: #{player_total}"
@@ -141,7 +150,7 @@ loop do
 
     prompt "Dealer hits!"
     dealer_cards << deck.pop
-    dealer_total += VALUES[dealer_cards.last[1]]
+    dealer_total = add_to_total(dealer_cards, dealer_total)
     prompt "Dealer's cards are now: #{display_cards(dealer_cards)}"
   end
 
