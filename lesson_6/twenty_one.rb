@@ -35,17 +35,17 @@ def total(cards)
   sum = 0
   values.each { |value| sum += value }
 
-  # correct for Aces
-  cards.each do |card|
-    sum -= 10 if card[1] == :Ace && sum > 21
+  # first two cards are Aces
+  if cards.select { |card| card[1] == :Ace }.count == 2
+    sum -= 10
   end
-
   sum
 end
 
-def add_to_total(cards, total)
+def update_total(cards, total)
   total += VALUES[cards.last[1]]
 
+  # correct for Aces
   cards.select { |card| card[1] == :Ace }.count.times do
     total -= 10 if total > 21
   end
@@ -120,6 +120,7 @@ loop do
   # player turn
   loop do
     player_turn = nil
+    player_total = total(player_cards)
     loop do
       prompt "Would you like to (h)it or (s)tay?"
       player_turn = gets.chomp.downcase
@@ -129,7 +130,7 @@ loop do
 
     if player_turn == 'h'
       player_cards << deck.pop
-      player_total = add_to_total(player_cards, player_total)
+      player_total = update_total(player_cards, player_total)
       prompt "You chose to hit!"
       prompt "Your cards are now: #{display_cards(player_cards)}"
       prompt "Your total is now: #{player_total}"
@@ -147,13 +148,13 @@ loop do
 
   # dealer turn
   prompt "Dealer turn..."
-
+  dealer_total = total(dealer_cards)
   loop do
     break if dealer_total >= DEALER_STAY
 
     prompt "Dealer hits!"
     dealer_cards << deck.pop
-    dealer_total = add_to_total(dealer_cards, dealer_total)
+    dealer_total = update_total(dealer_cards, dealer_total)
     prompt "Dealer's cards are now: #{display_cards(dealer_cards)}"
   end
 
