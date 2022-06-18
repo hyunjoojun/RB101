@@ -8,6 +8,18 @@ VALUES = {
 GAME_SIZE = 21
 DEALER_STAY = 17
 
+def round_state
+  {
+    deck: initialize_deck,
+    player_cards: [],
+    player_count: 0,
+    player_score: 0,
+    dealer_cards: [],
+    dealer_count: 0,
+    dealer_score: 0
+  }
+end
+
 def prompt(msg)
   puts "=> #{msg}"
 end
@@ -25,11 +37,15 @@ def valid_input?(input)
   input == 'h' || input == 's'
 end
 
-def display_cards(cards)
+def visualize_cards(cards)
   cards.map(&:join).join(", ")
 end
 
-def total(cards)
+def display_cards(state, person)
+  prompt "#{person} cards are now: #{state[:"#{person}_cards"]}"
+end
+
+def calculate_total(cards)
   values = cards.map { |card| VALUES[card[1]] }
 
   sum = 0
@@ -53,8 +69,33 @@ def update_total(cards, total)
   total
 end
 
+# hit!(state, "dealer")
+# hit!(state, "player")
+
+def hit!(state, person)
+  card = state[:deck].pop
+  state[:"#{person}_cards"] << card
+  add_card_to_count!(state, card, person)
+end
+
+def add_card_to_count!(state, card, person)
+  state[:"#{person}_count"] += VALUES[card[1]]
+
+  # correct for Aces
+  state[:"#{person}_cards"].select { |p_card| p_card[1] == :Ace }.count.times do
+    state[:"#{person}_count"] -= 10 if state[:"#{person}_count"] > 21
+  end
+end
+
 def busted?(total)
   total > GAME_SIZE
+end
+
+def compare_cards(dealer_cards, player_cards, dealer_total, player_total)
+  puts "=============="
+  prompt "Dealer has #{display_cards(dealer_cards)}, for a total of: #{dealer_total}"
+  prompt "Player has #{display_cards(player_cards)}, for a total of: #{player_total}"
+  puts "=============="
 end
 
 # :tie, :dealer, :player, :dealer_busted, :player_busted
@@ -95,7 +136,7 @@ def play_again?
   answer = gets.chomp
   answer.downcase.start_with?('y')
 end
-
+def start
 loop do
   system 'clear'
   display_welcome_message
@@ -114,8 +155,8 @@ loop do
   player_total = total(player_cards)
   dealer_total = total(dealer_cards)
 
-  prompt "Your cards: #{display_cards(player_cards)}, total: #{player_total}"
-  prompt "Dealer's cards: #{display_cards(dealer_cards)[0..1]} + ? "
+  display_cards(state, "player")
+  prompt "Dealer's cards: #{visualize_cards(dealer_cards)[0..1]} + ? "
 
   # player turn
   loop do
@@ -132,8 +173,8 @@ loop do
       player_cards << deck.pop
       player_total = update_total(player_cards, player_total)
       prompt "You chose to hit!"
-      prompt "Your cards are now: #{display_cards(player_cards)}"
-      prompt "Your total is now: #{player_total}"
+      display_cards(player_cards)
+      display_total(player_total)
     end
 
     break if player_turn == 's' || busted?(player_total)
@@ -141,7 +182,7 @@ loop do
 
   if busted?(player_total)
     display_result(dealer_total, player_total)
-    play_again? ? next : break
+    play_again? ? next : compare_cards(dealer_cards, player_cards, dealer_total, player_total)
   else
     prompt "You stayed at #{player_total}"
   end
@@ -161,16 +202,13 @@ loop do
   if busted?(dealer_total)
     prompt "Dealer total is now: #{dealer_total}"
     display_result(dealer_total, player_total)
-    play_again? ? next : break
+    play_again? ? next : compare_cards(dealer_cards, player_cards, dealer_total, player_total)
   else
     prompt "Dealer stays at #{dealer_total}"
   end
 
   # both player and dealer stays - compare cards!
-  puts "=============="
-  prompt "Dealer has #{display_cards(dealer_cards)}, for a total of: #{dealer_total}"
-  prompt "Player has #{display_cards(player_cards)}, for a total of: #{player_total}"
-  puts "=============="
+  compare_cards(dealer_cards, player_cards, dealer_total, player_total)
 
   display_result(dealer_total, player_total)
 
@@ -178,3 +216,4 @@ loop do
 end
 
 prompt "Thank you for playing Twenty-One! Good bye!"
+end
