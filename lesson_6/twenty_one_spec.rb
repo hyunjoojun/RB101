@@ -33,5 +33,20 @@ RSpec.describe "TwentyOne game" do
       expect(state[:player_count]).to eq(15)
       end
     end
+
+    context "when there is an Ace" do
+      it "subtract 10 from total if total > 21" do
+      state = round_state
+      person = "player"
+      state[:player_cards] = [["♦", :Ace], ["♠", :"5"], ["♠", :"10"]]
+      state[:player_count] = 16
+
+      allow(state[:deck]).to receive(:pop).and_return(["♥", :"Queen"])
+      hit!(state, person)
+
+      expect(state[:player_cards]).to eq([["♦", :Ace], ["♠", :"5"], ["♠", :"10"], ["♥", :"Queen"]])
+      expect(state[:player_count]).to eq(26)
+      end
+    end
   end
 end
