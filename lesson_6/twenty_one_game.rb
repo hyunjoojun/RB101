@@ -34,7 +34,7 @@ def display_welcome_message
   prompt "First player to win 5 rounds wins the game!"
   prompt "Try to get as close to 21 as possible, without going over!"
   prompt "Detailed rules can be found here: https://bargames101.com/21-card-game-rule/"
-  puts "------------------------------------"
+  puts "--------------------------------------------"
 end
 
 def initialize_deck
@@ -73,7 +73,7 @@ end
 
 def display_round(state)
   state[:round] += 1
-  prompt "ROUND #{state[:round]}"
+  prompt "******* ROUND #{state[:round]} *******"
 end
 
 def hit!(state, person)
@@ -119,10 +119,10 @@ def add_score(game_state, state)
 end
 
 def display_score(game_state)
-  puts "======================="
+  puts "=============================="
   prompt "Your score: #{game_state[:player_score]}"
   prompt "Dealer score: #{game_state[:dealer_score]}"
-  puts "======================="
+  puts "=============================="
 end
 
 def busted?(state, person)
@@ -153,7 +153,7 @@ def player_turn(state)
     break if player_choice == "s" || busted?(state, "player")
   end
 
-  if !busted?(state, "player")
+  unless busted?(state, "player")
     prompt "You stayed at #{state[:player_count]}"
   end
   display_dealer_state(state)
@@ -168,7 +168,7 @@ def dealer_turn(state)
     hit!(state, "dealer")
   end
 
-  if !busted?(state, "dealer")
+  unless busted?(state, "dealer")
     prompt "Dealer stays at #{state[:dealer_count]}"
   end
 end
@@ -227,7 +227,7 @@ def start_round(game_state)
   display_dealer_card(state)
   player_turn(state)
 
-  if !busted?(state, "player")
+  unless busted?(state, "player")
     dealer_turn(state)
   end
 

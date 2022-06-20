@@ -48,5 +48,20 @@ RSpec.describe "TwentyOne game" do
       expect(state[:player_count]).to eq(26)
       end
     end
+
+    context "when there are two Ace" do
+      it "one is 11 and another one is 1" do
+      state = round_state
+      person = "player"
+      state[:player_cards] = [["♦", :Ace]]
+      state[:player_count] = 11
+
+      allow(state[:deck]).to receive(:pop).and_return(["♠", :Ace])
+      hit!(state, person)
+
+      expect(state[:player_cards]).to eq([["♦", :Ace], ["♠", :Ace]])
+      expect(state[:player_count]).to eq(12)
+      end
+    end
   end
 end
