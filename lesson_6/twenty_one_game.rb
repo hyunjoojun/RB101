@@ -1,5 +1,3 @@
-require "pry"
-
 SUITS = %w(♥ ♦ ♣ ♠)
 VALUES = {
   "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9,
@@ -93,17 +91,16 @@ def add_card_to_count!(state, card, person)
 end
 
 def total(state, person)
-  count = 0
+  state[:"#{person}_count"] = 0
   state[:"#{person}_cards"].each do |card|
-    count += VALUES[card[1]]
+    state[:"#{person}_count"] += VALUES[card[1]]
   end
 
   state[:"#{person}_cards"].select { |p_card| p_card[1] == :Ace }.count.times do
     break unless busted?(state, person)
-    count -= 10
-  end
 
-  state[:"#{person}_count"] = count
+    state[:"#{person}_count"] -= 10
+  end
 end
 
 def add_score(game_state, state)
@@ -246,7 +243,10 @@ def start_game
   loop do
     start_round(game_state)
 
-    break if game_state[:player_score] == WINNING_SCORE || game_state[:dealer_score] == WINNING_SCORE
+    winner_present = game_state[:player_score] == WINNING_SCORE ||
+                     game_state[:dealer_score] == WINNING_SCORE
+
+    break if winner_present
   end
   display_grand_winner(game_state)
   play_again? ? start_game : say_thanks
