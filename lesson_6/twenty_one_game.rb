@@ -12,7 +12,7 @@ DEALER_STAY = 17
 def new_game_state
 {
   player_score: 0,
-  dealer_score: 0,
+  dealer_score: 0
 }
 end
 
@@ -23,7 +23,7 @@ def round_state
     player_cards: [],
     player_count: 0,
     dealer_cards: [],
-    dealer_count: 0,
+    dealer_count: 0
   }
 end
 
@@ -34,10 +34,15 @@ end
 def display_welcome_message
   prompt "Welcome to Twenty-One!"
   prompt "Try to get as close to 21 as possible, without going over!"
+  puts "------------------------------------"
 end
 
 def initialize_deck
   SUITS.product(VALUES.keys).shuffle
+end
+
+def valid_input?(input)
+  input == 'h' || input == 's'
 end
 
 def visualize_cards(cards)
@@ -45,14 +50,18 @@ def visualize_cards(cards)
 end
 
 def display_player_status(state)
-  puts "------------------------------------"
-  prompt "Your cards are now: #{visualize_cards(state[:player_cards])}"
-  prompt "Your count is now: #{state[:player_count]}"
+  prompt "Your cards are: #{visualize_cards(state[:player_cards])}"
+  prompt "Your count is: #{state[:player_count]}"
 end
 
 def display_dealer_card(state)
   puts "------------------------------------"
   prompt "Dealer's cards: #{visualize_cards(state[:dealer_cards])[0..1]} + ? "
+end
+
+def display_dealer_state(state)
+  prompt "Dealer's cards are: #{visualize_cards(state[:dealer_cards])}"
+  prompt "Dealer's count is: #{state[:dealer_count]}"
 end
 
 def hit!(state, person)
@@ -74,21 +83,75 @@ def busted?(state, person)
   state[:"#{person}_count"] > GAME_SIZE
 end
 
-def player_turn(state)
+def hit_or_stay?
+  player_choice = nil
   loop do
     prompt "Would you like to (h)it or (s)tay?"
-    answer = gets.chomp.downcase
+    player_choice = gets.chomp.downcase
+    break if valid_input?(player_choice)
+    prompt "Sorry, must enter 'h' or 's'."
+  end
+  player_choice
+end
 
-    if answer == "h"
+def player_turn(state)
+  loop do
+    player_choice = hit_or_stay?
+
+    if player_choice == "h"
       hit!(state, "player")
-      break if busted?(state, "player")
-    else
-      break
+      prompt "You chose to hit!"
+      display_player_status(state)
     end
+
+    break if player_choice == "s" || busted?(state, "player")
+  end
+
+  if !busted?(state, "player")
+    prompt "You stayed at #{state[:player_count]}"
+    display_player_status(state)
+  end
+  display_dealer_state(state)
+end
+
+def dealer_turn(state)
+  prompt "Dealer turn..."
+  loop do
+    break if state[:dealer_count] >= DEALER_STAY
+
+    prompt "Dealer hits!"
+    hit!(state, "dealer")
+  end
+
+  if !busted?(state, "dealer")
+    prompt "Dealer stays at #{state[:dealer_count]}"
+  end
+  display_dealer_state(state)
+end
+
+def display_result(state)
+  if state[:player_count] > GAME_SIZE
+    prompt "You busted! Dealer wins!"
+  elsif state[:dealer_count] > GAME_SIZE
+    prompt "Dealer busted! You win!"
+  elsif state[:dealer_count] < state[:player_count]
+    prompt "You win!"
+  elsif state[:dealer_count] > state[:player_count]
+    prompt "Dealer wins!"
+  else
+    prompt "It's a tie!"
   end
 end
 
+def play_again?
+  puts "-------------"
+  prompt "Do you want to play again? (y or n)"
+  answer = gets.chomp
+  answer.downcase.start_with?('y')
+end
+
 def start_round
+  system 'clear'
   display_welcome_message
   state = round_state
 
@@ -101,19 +164,17 @@ def start_round
   display_dealer_card(state)
 
   player_turn(state)
-end
 
-def start_game(iterations = ENV["ITERATIONS"].to_i)
-  i = 0
-  loop do # starts the game
-    break if i == iterations
-
-    display_welcome_message
-    start_round
-
-    i += 1
+  if !busted?(state, "player")
+    dealer_turn(state)
   end
+
+  display_result(state)
 end
 
-# start_game
-# start_round
+def start_game
+  state = new_game_state
+end
+
+start_game
+start_round
