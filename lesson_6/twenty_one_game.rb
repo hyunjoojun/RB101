@@ -130,7 +130,7 @@ def hit_or_stay?
   player_choice = nil
   loop do
     prompt "Would you like to (h)it or (s)tay?"
-    player_choice = gets.chomp.downcase
+    player_choice = gets.chomp.downcase.strip
     break if valid_input?(player_choice)
     prompt "Sorry, must enter 'h' or 's'."
   end
@@ -199,14 +199,14 @@ end
 def enter_to_continue
   prompt "Please press Enter to continue."
   loop do
-    input = gets.chomp
+    input = gets.chomp.strip
     break if input
   end
 end
 
 def play_again?
   prompt "Do you want to play again? (y or n)"
-  answer = gets.chomp
+  answer = gets.chomp.strip
   answer.downcase.start_with?('y')
 end
 
