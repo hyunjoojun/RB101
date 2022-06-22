@@ -57,7 +57,7 @@ def display_dealer_card(state)
   prompt "Dealer's cards: #{visualize_cards(state[:dealer_cards])[0..1]} + ? "
 end
 
-def display_dealer_state(state)
+def display_dealer_status(state)
   prompt "Dealer's cards are: #{visualize_cards(state[:dealer_cards])}"
   prompt "Dealer's count is: #{state[:dealer_count]}"
 end
@@ -153,7 +153,7 @@ def player_turn(state)
   unless busted?(state, "player")
     prompt "You stayed at #{state[:player_count]}"
   end
-  display_dealer_state(state)
+  display_dealer_status(state)
 end
 
 def dealer_turn(state)
